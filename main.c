@@ -580,6 +580,6 @@ int main(int argc, char** argv) {
         printf("%f, ", exec_time[i]);
     }
     printf("\n Total time: %f \n", total_time);
-    printf("Average time: %f", total_time / max_iter);
+    printf("Average time: %f \n", total_time / max_iter);
     return (EXIT_SUCCESS);
 }
