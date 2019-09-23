@@ -575,11 +575,11 @@ int main(int argc, char** argv) {
 
     }
 
-    printf("\n TIME SPENT PER INSTANCE \n");
+    printf("\n Exec. time per repetition: \n");
     for(int i=0;i<max_iter;i++){
         printf("%f, ", exec_time[i]);
     }
-    printf("\n TOTAL TIME: %f \n", total_time);
-    printf("AVERAGE TIME: %f", total_time / max_iter);
+    printf("\n Total time: %f \n", total_time);
+    printf("Average time: %f", total_time / max_iter);
     return (EXIT_SUCCESS);
 }
