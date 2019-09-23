@@ -38,7 +38,7 @@ The execution report a output with the following relevant information:
 
 ```
 $ Solution size (0 perc. outliers) = 4162.655273
-  Solution size (10.00 perc. outliers) = 2045.880005
+  Solution size (3.00 perc. outliers) = 2045.880005
   
   Exec. time per repetition:
   0.014728,
