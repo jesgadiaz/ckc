@@ -98,10 +98,8 @@ int main(int argc, char** argv) {
     bool multicenter;
     if(strcmp(str2,"true") == 0){
         multicenter = true;
-        printf("multicenter = true\n");
     }else{
         multicenter = false;
-        printf("multicenter = false\n");
     }
 
     // Extra variables
@@ -581,7 +579,7 @@ int main(int argc, char** argv) {
     for(int i=0;i<max_iter;i++){
         printf("%f, ", exec_time[i]);
     }
-    printf("TOTAL TIME: %f \n", total_time);
+    printf("\n TOTAL TIME: %f \n", total_time);
     printf("AVERAGE TIME: %f", total_time / max_iter);
     return (EXIT_SUCCESS);
 }
