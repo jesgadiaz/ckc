@@ -11,22 +11,22 @@ $ gcc -o 'output' 'main.c' -lm
 # Run
 
 ```
-$ 'output' {file} {n} {k} {L} {out_perc} {multicenter} {ind_rep} {rep} {print}
+$ 'output' [file] [n] [k] [L] [out_perc] [multicenter] [ind_rep] [rep] [print]
 ```
 
 ## Where,
 
 |  Parameter |                                          Description                                          |
 |----------|---------------------------------------------------------------------------------------------|
-| `{file}` | (string) Instance file path with a valid format, defined here                                    |
-| `{n}`    | (integer) Number of vertices  |
-| `{k}`    | (integer) Number of centers   |
-| `{L}`    | (integer) Uniform capacity    |
-| `{out_perc}` | (float) Percentage of outliers between 0 and 1  |
-| `{multicenter}` | (string) multicenters allowed = true; otherwise false  |
-| `{ind_rep}`    | (integer) Independent repetitions of the algorithm, for sensitivity analysis |
-| `{rep}`    | (integer) Number of repetions of the algorithm. The best of rep is returned by the algorithm. |
-| `{print}`    | (string) If true, prints the solutions (centers and assigned centers). Otherwise, only prints the solution size |
+| `[file]` | (string) Instance file path with a valid format, defined here                                    |
+| `[n]`    | (integer) Number of vertices  |
+| `[k]`    | (integer) Number of centers   |
+| `[L]`    | (integer) Uniform capacity    |
+| `[out_perc]` | (float) Percentage of outliers between 0 and 1  |
+| `[multicenter]` | (string) multicenters allowed = true; otherwise false  |
+| `[ind_rep]`    | (integer) Independent repetitions of the algorithm, for sensitivity analysis |
+| `[rep]`    | (integer) Number of repetions of the algorithm. The best of rep is returned by the algorithm. |
+| `[print]`    | (string) If true, prints the solutions (centers and assigned centers). Otherwise, only prints the solution size |
 
 # Example
 ```
