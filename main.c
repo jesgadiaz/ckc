@@ -88,6 +88,7 @@ int main(int argc, char** argv) {
     double exec_time[100];  // 100 executions with different seed
     static float matrix[400][400]; // maximum number of vertices = 400
     static float costs[160000];
+    float variance;
     float vertices_x_y[400][2];
     int last_zero;
     int len = strlen(str1);
@@ -116,6 +117,10 @@ int main(int argc, char** argv) {
     int best_C[k];
     static int best_overall_assigned_center[400];
     int best_overall_C[k];
+    float average_solution_size     = 0;
+    float average_solution_size_out = 0;
+    float solution_size[max_iter];
+    float solution_size_out[max_iter];
 
     // LOAD INSTANCE
     int i = 0;
@@ -530,8 +535,15 @@ int main(int argc, char** argv) {
         }
         my_qsort(heap2, n, sizeof(heap2[0]), my_comparator, 0);
 
-        printf("\nSolution size (0 perc. outliers) = %f \n", heap2[n-1][1]);
-        printf("Solution size (%.2f perc. outliers) = %f \n", out * 100, heap2[n - 1 - (int)ceil(out * (float)n)][1]);
+	//if(max_iter == 1){
+	//    printf("\nSolution size (0 perc. outliers) = %f \n", heap2[n-1][1]);
+	//    printf("Solution size (%.2f perc. outliers) = %f \n", out * 100, heap2[n - 1 - (int)ceil(out * (float)n)][1]);
+	//}else{
+            average_solution_size     = average_solution_size     + heap2[n-1][1];
+            average_solution_size_out = average_solution_size_out + heap2[n - 1 - (int)ceil(out * (float)n)][1];
+            solution_size[iter]     = heap2[n-1][1];
+	    solution_size_out[iter] = heap2[n - 1 - (int)ceil(out * (float)n)][1];
+        //}
 
     if(strcmp(str3,"true") == 0){
         printf("\n");
@@ -571,15 +583,50 @@ int main(int argc, char** argv) {
             printf("\n");
         }
         printf("]}");
+        }
     }
 
+    if(strcmp(str3,"true") == 0){
+	printf("\n Exec. time per repetition: \n");
+	    for(int i=0;i<max_iter;i++){
+	        printf("%f, ", exec_time[i]);
+	    }
     }
 
-    printf("\n Exec. time per repetition: \n");
-    for(int i=0;i<max_iter;i++){
-        printf("%f, ", exec_time[i]);
-    }
     printf("\n Total time: %f \n", total_time);
     printf("Average time: %f \n", total_time / max_iter);
+
+    average_solution_size     = average_solution_size     / (float)max_iter;
+    average_solution_size_out = average_solution_size_out / (float)max_iter;
+
+    printf("\nAverage solution size (0 perc. outliers) = %f \n", average_solution_size);
+    printf("Average solution size (%.2f perc. outliers) = %f \n", out * 100, average_solution_size_out);
+
+    variance = 0;
+    for(int i=0;i<max_iter;i++){
+        //printf("%f \n", solution_size[i]);
+        variance = variance + ((solution_size[i] - average_solution_size) * (solution_size[i] - average_solution_size));
+        //printf("%f \n", variance);
+    }
+    if(max_iter > 2){
+        variance = variance / (max_iter - 1);        
+    }else{
+        variance = variance / (max_iter);
+    }
+    printf("\nStandard deviation (0 perc. outliers) = %f \n", sqrt(variance));
+
+    variance = 0;
+    for(int i=0;i<max_iter;i++){
+        //printf("%f \n", solution_size_out[i]);
+        variance = variance + ((solution_size_out[i] - average_solution_size_out) * (solution_size_out[i] - average_solution_size_out));
+        //printf("%f \n", variance);
+    }
+    if(max_iter > 2){
+        variance = variance / (max_iter - 1);
+    }else{
+        variance = variance / (max_iter);
+    }
+    printf("Standard deviation (%.2f perc. outliers) = %f \n", out * 100, sqrt(variance));
+
     return (EXIT_SUCCESS);
 }
