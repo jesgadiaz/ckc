@@ -72,6 +72,7 @@ const char* str1;
 const char* str2;
 const char* str3;
 const char* algorithm;
+const char* instance_format;
 
 int main(int argc, char** argv) {
     int seed;
@@ -84,6 +85,8 @@ int main(int argc, char** argv) {
     out = atof(argv[5]);
     str2 = argv[6];
     str3 = argv[9];
+    instance_format = argv[10];
+
     double total_time = 0;
     double exec_time[100];  // 100 executions with different seed
     static float matrix[400][400]; // maximum number of vertices = 400
@@ -129,57 +132,102 @@ int main(int argc, char** argv) {
     char line[50];
     if (file == NULL){
         printf("FILE NOT FOUND");
-    }else{
-        int v;
-        float x, y;
-        while(fgets(line, sizeof(line), file)) {
-            int j = 0;
-            char* token = strtok(line, " ");
-            while (token) {
-                if(j == 0){
-                    v = atoi(token);
+    }else {
+        if (strcmp(instance_format, "tsplib")==0) {
+            int v;
+            float x, y;
+            while (fgets(line, sizeof(line), file)) {
+                int j = 0;
+                char *token = strtok(line, " ");
+                while (token) {
+                    if (j == 0) {
+                        v = atoi(token);
+                    }
+                    if (j == 1) {
+                        x = atof(token);
+                    }
+                    if (j == 2) {
+                        y = atof(token);
+                        vertices_x_y[v - 1][0] = x;
+                        vertices_x_y[v - 1][1] = y;
+                    }
+                    token = strtok(NULL, " ");
+                    j++;
                 }
-                if(j == 1){
-                    x = atof(token);
-                }
-                if(j == 2){
-                    y = atof(token);
-                    vertices_x_y[v-1][0] = x;
-                    vertices_x_y[v-1][1] = y;
-                }
-                token = strtok(NULL, " ");
-                j++;
+                free(token);
+                i++;
             }
-            free(token);
-            i++;
-        }
 
-        fclose(file);
-        for(int i=0;i<n;i++){
-            for(int j=0;j<n;j++){
-                matrix[i][j] = sqrt( pow(vertices_x_y[i][0] - vertices_x_y[j][0],2)
-                                   + pow(vertices_x_y[i][1] - vertices_x_y[j][1],2) );
+            fclose(file);
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = sqrt(pow(vertices_x_y[i][0] - vertices_x_y[j][0], 2)
+                                        + pow(vertices_x_y[i][1] - vertices_x_y[j][1], 2));
+                }
             }
-        }
+        } else if (strcmp(instance_format, "orlib")==0){
 
-        // GET ORDERED SET OF EDGE COSTS
-        for(int i=0;i<sizeof(costs)/sizeof(float);i++){
-                costs[i] = 0;
+            //setup graph
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    matrix[i][j] = i != j ? +INFINITY : 0;
+                }
             }
-        int p = 0;
-        for(int i=0;i<n;i++){
-            for(int j=i+1;j<n;j++){
-                costs[p] = matrix[i][j];
-                p++;
+
+            int v1;
+;           int v2;
+            float w;
+            while (fgets(line, sizeof(line), file)) {
+                int j = 0;
+                char *token = strtok(line, " ");
+                while (token) {
+                    if (j == 0) {
+                        v1 = atoi(token)-1;
+                    }
+                    if (j == 1) {
+                        v2 = atoi(token)-1;
+                    }
+                    if (j == 2) {
+                        w = atof(token);
+                        matrix[v1][v2] = w;
+                        matrix[v2][v1] = w;
+                    }
+                    token = strtok(NULL, " ");
+                    j++;
+                }
+                free(token);
+            }
+            fclose(file);
+
+            // floyd warshall
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    for (int l = 0; l < n; ++l) {
+                        cost = matrix[i][j] == +INFINITY || matrix[i][l] == +INFINITY ? +INFINITY : matrix[i][j] + matrix[i][l];
+                        if (cost < matrix[j][l]) matrix[j][l] = cost;
+                    }
+                }
             }
         }
-        qsort(costs, sizeof(costs)/sizeof(float), sizeof(float), floatcomp);
-        last_zero = 0;
-        for(int i=0;i<sizeof(costs)/sizeof(float);i++){
-            if(costs[i]!=0){
-                last_zero = i - 1;
-                break;
-            }
+    }
+   
+    // GET ORDERED SET OF EDGE COSTS
+    for (int i = 0; i < sizeof(costs) / sizeof(float); i++) {
+        costs[i] = 0;
+    }
+    int p = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            costs[p] = matrix[i][j];
+            p++;
+        }
+    }
+    qsort(costs, sizeof(costs) / sizeof(float), sizeof(float), floatcomp);
+    last_zero = 0;
+    for (int i = 0; i < sizeof(costs) / sizeof(float); i++) {
+        if (costs[i] != 0) {
+            last_zero = i - 1;
+            break;
         }
     }
 
@@ -609,7 +657,7 @@ int main(int argc, char** argv) {
         //printf("%f \n", variance);
     }
     if(max_iter > 2){
-        variance = variance / (max_iter - 1);        
+        variance = variance / (max_iter - 1);
     }else{
         variance = variance / (max_iter);
     }
