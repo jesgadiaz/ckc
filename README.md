@@ -11,7 +11,7 @@ $ gcc -o 'output' 'main.c' -lm
 # Run
 
 ```
-$ 'output' [file] [n] [k] [L] [out_perc] [multicenter] [ind_rep] [rep] [print]
+$ 'output' [file] [n] [k] [L] [out_perc] [multicenter] [ind_rep] [rep] [print] [instance_format]
 ```
 
 ## Where,
@@ -27,10 +27,11 @@ $ 'output' [file] [n] [k] [L] [out_perc] [multicenter] [ind_rep] [rep] [print]
 | `[ind_rep]`    | (integer) Independent repetitions of the algorithm, for sensitivity analysis |
 | `[rep]`    | (integer) Number of repetions of the algorithm. The best of rep is returned by the algorithm. |
 | `[print]`    | (string) If true, prints the solutions (centers and assigned centers). Otherwise, only prints the solution size |
+| `[instance_format]`    | (string) Type of instance to use ('tsplib' or 'orlib' are supported). |
 
 # Example
 ```
-$ 'output' 'pr124.tsp' 124 10 13 0.03 false 1 1 false
+$ 'output' 'pr124.tsp' 124 10 13 0.03 false 1 1 false tsplib
 ```
 
 ### Output information
@@ -47,7 +48,7 @@ $ Solution size (0 perc. outliers) = 4162.655273
 # Another example
 
 ```
-$ 'output' 'pr124.tsp' 124 10 13 0.03 false 1 1 true
+$ 'output' 'pr124.tsp' 124 10 13 0.03 false 1 1 true tsplib
 ```
 
 ### Output information
