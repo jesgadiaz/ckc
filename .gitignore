@@ -1,0 +1,7 @@
+#folders
+.idea/
+cmake-build-debug/
+
+# files
+*.txt
+*.tsp
