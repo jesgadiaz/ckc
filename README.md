@@ -11,7 +11,7 @@ $ gcc -o 'output' 'main.c' -lm
 # Run
 
 ```
-$ 'output' [file] [n] [k] [L] [out_perc] [multicenter] [ind_rep] [rep] [print] [instance_format]
+$ './output' [file] [n] [k] [L] [out_perc] [multicenter] [ind_rep] [rep] [print] [instance_format]
 ```
 
 ## Where,
