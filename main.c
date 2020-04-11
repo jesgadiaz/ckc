@@ -266,7 +266,7 @@ int main(int argc, char** argv) {
                 }
                 for(int i=0;i<n;i++){
                     for(int j=0;j<n;j++){
-                        if(i!=j & matrix[i][j] <= r){
+                        if(matrix[i][j] <= r){
                             score[i] = score[i]+ 1;
                         }
                     }
@@ -452,8 +452,7 @@ int main(int argc, char** argv) {
                     // UPDATE SCORE
                     for(int j=0;j<s_size;j++){
                         for(int b=0;b<n;b++){
-                            if(matrix[S[j]][b] <= r
-                                    && S[j] != b){
+                            if(matrix[S[j]][b] <= r){
                                 score[b] = score[b] - 1;
                             }
                         }
