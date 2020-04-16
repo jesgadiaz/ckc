@@ -52,7 +52,7 @@ $ 'output' 'pr124.tsp' 124 10 13 0.03 false 1 1 true tsplib
 ```
 
 ### Output information
-The execution report a output with the following relevant information:
+The execution reports the following relevant information:
 
 ```
 $ Solution size (0 perc. outliers) = 4162.655273 
