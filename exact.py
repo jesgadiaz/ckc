@@ -85,7 +85,7 @@ def createGraph(input_file, instance_format):
         
     
 def run(r):
-    global total_runtime, k, runtime, num_centers, m, cap
+    global total_runtime, k, runtime, num_centers, m, cap, input_file
     prunedMatrix = []
     for i in range(0,n):
         list = []
@@ -100,6 +100,10 @@ def run(r):
     try:
         global m, num_centers, runtime, cap
         m = Model("mip1")
+        
+        #******************************************************************************************************
+        m.setParam("MIPGap", 0.0);
+        #******************************************************************************************************
         
         y = []
         for i in range(n):
@@ -135,44 +139,116 @@ def run(r):
     
         for i in range(n):
             for j in range(n):    
-                m.addConstr(x[i][j] <= y[j] * prunedMatrix[i][j])
+                #m.addConstr(x[i][j] <= y[j] * prunedMatrix[i][j])
+                #******************************************************************************************************
+                m.addConstr(x[i][j] <= y[j] * prunedMatrix[i][j] * (1-y[i]))
+                #******************************************************************************************************
         
         for i in range(n):
-            m.addConstr(sum(x[i]) == 1)
+            #m.addConstr(sum(x[i]) == 1)
+            #******************************************************************************************************
+            m.addConstr(sum(x[i]) == 1 * (1-y[i]))
+            #******************************************************************************************************
         
         m.optimize()
         runtime = m.Runtime
         print("The run time is %f" % runtime)
         print("Obj:", m.objVal)
+        
+        #******************************************************************************************************
+        dom_set_size = 0
+        solution = []
+        assignment = []
+        center = 0
+        vertex_j = 1
+        vertex_i = 1
+        for v in m.getVars():
+            varName = v.varName
+            if varName[0] == 'y':
+                if v.x == 1.0:
+                    dom_set_size = dom_set_size + 1
+                    solution.append(varName[1:])
+            else:
+                if vertex_j <= n:
+                    if v.x == 1.0:
+                        assignment.append([vertex_i, vertex_j])
+                else:
+                    vertex_i = vertex_i + 1
+                    vertex_j = 1
+                vertex_j = vertex_j + 1
+        print("Cap. dom. set cardinality: " + str(dom_set_size))
+        solution = [int(i) for i in solution] 
+        #print("solution: " + str(solution))
+        #print("assignment: " + str(assignment))
+        
+        print('{"instance": "%s",' % input_file)
+        print('"centers": [')
+        counter = 0
+        for center in solution:
+            counter = counter + 1
+            nodes = []
+            for node in assignment:
+                if node[1] == center:
+                    nodes.append(node[0])
+            if counter == len(solution):
+                print('{ "center": ' + str(center) + ', "nodes": ' + str(nodes) + '}')
+            else:
+                print('{ "center": ' + str(center) + ', "nodes": ' + str(nodes) + '},')
+        print(']}')
+        
+            #print('%s %g' % (v.varName, v.x))
+        #******************************************************************************************************
             
-        num_centers = m.objVal
+        
+   # {"instance": "/home/ckc/Escritorio/pr124.tsp",
+   #  "outliers": [83,40,115,114], 
+   #  "centers": [ { "center": 59, "nodes": [28,32,33,34,35,54,57,58,59,60,61,64,65]},
+   #              { "center": 102, "nodes": [101,102,103,104,105,106,107,108,109,110,111,112,113]},
+   #              { "center": 8, "nodes": [8,9,10,11,12,13,14,15,16,46,47,48,49]},
+   #              { "center": 79, "nodes": [77,78,79,91,92,93,94,95,96,97,98,99,123]},
+   #              { "center": 6, "nodes": [0,1,2,3,4,5,6,7,26,27,29,30,31]},
+   #              { "center": 36, "nodes": [19,20,21,22,23,24,25,36,37,38,39,55,56]},
+   #              { "center": 16, "nodes": [17,18,40,41,42,43,44,45,50,51,52,53]},
+   #              { "center": 96, "nodes": [72,73,74,75,76,80,116,117,118,119,120,121,122]},
+   #              { "center": 89, "nodes": [84,85,86,87,88,89,90,100]},
+   #              { "center": 64, "nodes": [62,63,66,67,68,69,70,71,81,82,83,114,115]}
+   #  ]}
+        
+        
+        num_centers = dom_set_size
+#        num_centers = m.objVal
         
     except GurobiError:
         print("Error reported")
         
         
 def binarySearch():
-    global total_runtime, k, runtime, num_centers
+    global total_runtime, k, runtime, num_centers, input_file
     total_runtime = 0
     not_done = True
     upper = len(ordered_sizes) - 1
     lower = 0
     best_solution_size = float("inf")
     while not_done:
-        mid = math.ceil(lower + ((upper - lower)/2))
+        #mid = math.ceil(lower + ((upper - lower)/2))
+        mid = math.ceil((upper + lower) /2)
         mid_value = ordered_sizes[int(mid)]
         if mid == upper:
             not_done = False
+            run(mid_value)
+            total_runtime = total_runtime + runtime
         else:
             run(mid_value)
             total_runtime = total_runtime + runtime
             if num_centers <= k:
                 upper = mid
+                print("UPPER = MID")
                 if mid_value <= best_solution_size:
                     best_solution_size = mid_value
             else:
                 lower = mid
-    print("solution size: " + str(best_solution_size))
+                print("LOWER = MID")
+    print("best solution size: " + str(best_solution_size))
     print("total runtime: " + str(total_runtime))
     
 if __name__ == "__main__":
