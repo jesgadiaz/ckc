@@ -68,9 +68,9 @@ void down_adjust(float heap[],int i)
 	}
 }
 
-const char* str1;
+const char* instance_path;
 const char* str2;
-const char* str3;
+const char* printable;
 const char* algorithm;
 const char* instance_format;
 
@@ -78,13 +78,13 @@ int main(int argc, char** argv) {
     int seed;
     int n, k, L;
     float out;
-    str1 = argv[1];
+    instance_path = argv[1];
     n = atoi(argv[2]);
     k = atoi(argv[3]);
     L = atoi(argv[4]);
     out = atof(argv[5]);
     str2 = argv[6];
-    str3 = argv[9];
+    printable = argv[9];
     instance_format = argv[10];
 
     double total_time = 0;
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     float variance;
     float vertices_x_y[400][2];
     int last_zero;
-    int len = strlen(str1);
+    int len = strlen(instance_path);
     int max_iter;
     max_iter = atoi(argv[7]);
     int num_repetitions = atoi(argv[8]);
@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
     // LOAD INSTANCE
     int i = 0;
     float cost;
-    FILE* file = fopen(str1, "r");
+    FILE* file = fopen(instance_path, "r");
     char line[50];
     if (file == NULL){
         printf("FILE NOT FOUND");
@@ -305,7 +305,7 @@ int main(int argc, char** argv) {
                     // IS THERE A CRITICAL NEIGHBOR WITH SCORE GREATER THAN L?
                     bool big_score = false;
                     for(int j=0;j<n;j++){
-                        if(matrix[farthest_vertex][j] <= r && score[j] > L){
+                        if(matrix[farthest_vertex][j] <= r && score[j] > L && !bool_C[j]){
                             big_score = true;
                             break;
                         }
@@ -592,9 +592,9 @@ int main(int argc, char** argv) {
 	    solution_size_out[iter] = heap2[n - 1 - (int)ceil(out * (float)n)][1];
         //}
 
-    if(strcmp(str3,"true") == 0){
+    if(strcmp(printable, "true") == 0){
         printf("\n");
-        printf("{ \"instance\": \"%s\", \n", str1);
+        printf("{ \"instance\": \"%s\", \n", instance_path);
         printf(" \"outliers\": [");
         int count2 = 0;
         for(int j = n-(int)ceil(out * (float)n);j<n;j++){
@@ -633,7 +633,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    if(strcmp(str3,"true") == 0){
+    if(strcmp(printable, "true") == 0){
 	printf("\n Exec. time per repetition: \n");
 	    for(int i=0;i<max_iter;i++){
 	        printf("%f, ", exec_time[i]);
